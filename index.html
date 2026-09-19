@@ -12,11 +12,9 @@
 
     <div id="gameList"></div>
 
+    <button onclick="LoadStash()">Load Games</button>
     <script>
 
-        // ==========================================
-        // PUT YOUR GAME FILENAMES HERE
-        // ==========================================
 
         const games = [
     "1-on-1-soccer.html",
@@ -321,13 +319,7 @@
     "zombie-rush.html"
 ];
 
-
-        // ==========================================
-        // CREATE THE GAME BUTTONS
-        // ==========================================
-
         const gameList = document.getElementById("gameList");
-
 
         games.forEach(function(gameFile) {
 
@@ -364,6 +356,9 @@
             gameList.appendChild(document.createTextNode(" "));
         });
 
+        function LoadStash() {
+            window.location.href = "game_stash.html";
+        }
     </script>
 
 </body>
