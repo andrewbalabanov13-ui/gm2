@@ -94,7 +94,7 @@
     "clash-of-vikings.html",
     "cleanup-io.html",
     "cluster-rush.html",
-    "cookie-clicker.htm",
+    "cc.htm",
     "crazy-cars.html",
     "crazy-cattle-3D.html",
     "crazy-crash-landing.html",
@@ -351,6 +351,10 @@
 
             // Set the button text
             button.textContent = gameName;
+
+            if (gameName == "Cc.Htm"){
+                button.textContent = "cookie-clicker"
+            } 
 
             // When the button is clicked,
             // open the game from the offline folder
