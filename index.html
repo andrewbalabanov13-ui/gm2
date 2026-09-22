@@ -22,10 +22,11 @@
 
     <div id="GameList"></div>
 
-    <h1>Currently V1</h1>
+    <h1>Currently V1.01</h1>
     <script>
 
         const games = [
+    "cc-working",
     "1-on-1-soccer.html",
     "1-on-1-tennis.html",
     "1.12.html",
@@ -355,10 +356,17 @@
             if (gameName == "Cc.Htm"){
                 button.textContent = "cookie-clicker"
             } 
+            if (gameName == "cc-working"){
+                button.textContent = "Cookie-Clicker Working Version"
+            }
 
             // When the button is clicked,
             // open the game from the offline folder
             button.onclick = function() {
+                if (gameFile == "cc-working"){
+                    window.location.href = "offline/" + gameFile + "/index.html"
+                    return
+                }
                 window.location.href = "offline/" + gameFile;
             };
 
