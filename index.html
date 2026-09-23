@@ -490,6 +490,7 @@
         }
 
         window.EnterMain = async function(){
+            try{
             let user_response = prompt('token.?')
             let EncryptedMsg = "gAAAAABqs0G7zdpt-VXK3T3rostZr14xz569fcgDae41Q-n31n0JBSwuwa0v_7GvZpjhbpDXTwX43MWy5StP7j_2uQFiaS2kXg=="
             let decrypted_msg = await decryptMessage(EncryptedMsg,user_response)
@@ -497,6 +498,9 @@
             if (decrypted_msg == "PHWLK"){
                 localStorage.setItem('token',user_response)
                 window.location.href="game_index.html"
+            }}
+            catch(error){
+                alert(error)
             }
         }
     </script>
