@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fernet Encryptor</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/fernet@0.3.3/fernetBrowser.js"></script>
+</head>
+
+<body>
+
+    <h1>Fernet Encrypt / Decrypt</h1>
+
+    <input id="password" type="password" placeholder="Password">
+
+    <br><br>
+
+    <textarea id="message" placeholder="Message"></textarea>
+
+    <br><br>
+
+    <button onclick="encryptMessage()">Encrypt</button>
+    <button onclick="decryptMessage()">Decrypt</button>
+
+    <br><br>
+
+    <textarea id="output" placeholder="Encrypted/decrypted result"></textarea>
+
+    <script>
+
+        const SALT = "my-fixed-salt-2026";
+        const ITERATIONS = 600000;
+
+        async function deriveFernetKey(password) {
+            const encoder = new TextEncoder();
+            const passwordBytes = encoder.encode(password);
+            const importedKey = await crypto.subtle.importKey(
+                "raw",
+                passwordBytes,
+                "PBKDF2",
+                false,
+                ["deriveBits"]
+            );
+
+            const derivedBits = await crypto.subtle.deriveBits(
+                {
+                    name: "PBKDF2",
+                    salt: encoder.encode(SALT),
+                    iterations: ITERATIONS,
+                    hash: "SHA-256"
+                },
+                importedKey,
+                256
+            );
+
+            const bytes = new Uint8Array(derivedBits);
+            let binary = "";
+
+            for (let i = 0; i < bytes.length; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+
+            return btoa(binary)
+                .replace(/\+/g, "-")
+                .replace(/\//g, "_");
+        }
+
+
+        async function encryptMessage() {
+
+            const password = document.getElementById("password").value;
+            const message = document.getElementById("message").value;
+            const output = document.getElementById("output");
+
+            if (!password) {
+                output.value = "Enter a password.";
+                return;
+            }
+
+            if (!message) {
+                output.value = "Enter a message.";
+                return;
+            }
+
+            try {
+
+                const key = await deriveFernetKey(password);
+                const secret = new fernet.Secret(key);
+                const token = new fernet.Token({
+                    secret: secret
+                });
+
+                const encrypted = token.encode(message);
+                output.value = encrypted;
+            } catch (error) {
+                output.value = "Encryption error: " + error;
+
+            }
+        }
+
+
+        async function decryptMessage() {
+            const password = document.getElementById("password").value;
+            const encrypted = document.getElementById("message").value;
+            const output = document.getElementById("output");
+
+            if (!password) {
+                output.value = "Enter a password.";
+                return;
+            }
+
+            if (!encrypted) {
+                output.value = "Enter an encrypted message.";
+                return;
+            }
+
+            try {
+                const key = await deriveFernetKey(password);
+                const secret = new fernet.Secret(key);
+                const token = new fernet.Token({
+                    secret: secret,
+                    token: encrypted,
+                    ttl: 0
+                });
+                const decrypted = token.decode();
+                output.value = decrypted;
+            } catch (error) {
+                output.value = "Wrong password or invalid encrypted message.";
+            }
+        }
+    </script>
+
+</body>
+</html>
+

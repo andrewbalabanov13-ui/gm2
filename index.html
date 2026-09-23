@@ -6,13 +6,7 @@
 
     <title>Exploring Space</title>
 
-    <script type="importmap">
-    {
-        "imports": {
-            "fernet": "https://esm.sh"
-        }
-    }
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/fernet@0.3.3/fernetBrowser.js"></script>
 
     <style>
         * {
@@ -331,13 +325,20 @@
         <button onclick="EnterMain()">Contact Us</button>
     </footer>
 
-    <script>
+    <script type="module">
+        
+        const SALT = "my-fixed-salt-2026";
+        const ITERATIONS = 600000;
         const saved_token = localStorage.getItem("token");
-        if (saved_token !== null){
-            if (saved_token == atob("Szd4UTltUjJ2TDhwVDR6TjZjVzF5SDVzRDNmSjBhQjh1RTJnVjlrWDRuUDZxWg==")){
+        console.log(saved_token)
+        if (saved_token !== null) {
+            let EncryptedMsg = "gAAAAABqs0G7zdpt-VXK3T3rostZr14xz569fcgDae41Q-n31n0JBSwuwa0v_7GvZpjhbpDXTwX43MWy5StP7j_2uQFiaS2kXg=="
+            let decrypted_msg = await decryptMessage(EncryptedMsg,saved_token)
+            if (decrypted_msg == "PHWLK"){
                 window.location.href="game_index.html"
             }
         }
+
 
 
         const planets = {
@@ -392,6 +393,56 @@
 
         };
 
+        async function decryptMessage(encryptedMsg,password) {
+
+            try {
+                const key = await deriveFernetKey(password);
+                const secret = new fernet.Secret(key);
+                const token = new fernet.Token({
+                    secret: secret,
+                    token: encryptedMsg,
+                    ttl: 0
+                });
+                const decrypted = token.decode();
+                return decrypted
+            } catch (error) {
+                console.log("Wrong password or invalid encrypted message." + error);
+            }
+        }
+
+        async function deriveFernetKey(password) {
+            const encoder = new TextEncoder();
+            const passwordBytes = encoder.encode(password);
+            const importedKey = await crypto.subtle.importKey(
+                "raw",
+                passwordBytes,
+                "PBKDF2",
+                false,
+                ["deriveBits"]
+            );
+
+            const derivedBits = await crypto.subtle.deriveBits(
+                {
+                    name: "PBKDF2",
+                    salt: encoder.encode(SALT),
+                    iterations: ITERATIONS,
+                    hash: "SHA-256"
+                },
+                importedKey,
+                256
+            );
+
+            const bytes = new Uint8Array(derivedBits);
+            let binary = "";
+
+            for (let i = 0; i < bytes.length; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+
+            return btoa(binary)
+                .replace(/\+/g, "-")
+                .replace(/\//g, "_");
+        }
 
         function showPlanet() {
 
@@ -407,7 +458,6 @@
             `;
 
         }
-
 
         const facts = [
 
@@ -429,7 +479,6 @@
 
         ];
 
-
         function newFact() {
 
             const randomIndex =
@@ -440,12 +489,13 @@
 
         }
 
-
-        function EnterMain(){
-            user_response = prompt("token?")
-            let t = atob("Szd4UTltUjJ2TDhwVDR6TjZjVzF5SDVzRDNmSjBhQjh1RTJnVjlrWDRuUDZxWg==")
-            if (user_response == t){
-                localStorage.setItem("token",t)
+        window.EnterMain = async function(){
+            let user_response = prompt('token.?')
+            let EncryptedMsg = "gAAAAABqs0G7zdpt-VXK3T3rostZr14xz569fcgDae41Q-n31n0JBSwuwa0v_7GvZpjhbpDXTwX43MWy5StP7j_2uQFiaS2kXg=="
+            let decrypted_msg = await decryptMessage(EncryptedMsg,user_response)
+            console.log(decrypted_msg)
+            if (decrypted_msg == "PHWLK"){
+                localStorage.setItem('token',user_response)
                 window.location.href="game_index.html"
             }
         }

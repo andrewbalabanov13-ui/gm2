@@ -1,16 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- To ensure user has token and shit -->
-    <script>
-        if (localStorage.getItem("token") !== atob("Szd4UTltUjJ2TDhwVDR6TjZjVzF5SDVzRDNmSjBhQjh1RTJnVjlrWDRuUDZxWg==")){
-            window.location.href = "index.html"
-            }
-    </script>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Offline Games</title>
     <style>
+        body {
+            display:none;
+        }
+
         #OfflineGameButton {
             height:20px;
         }
@@ -20,17 +15,101 @@
             height:400px;
         }
     </style>
+
+<script src="https://cdn.jsdelivr.net/npm/fernet@0.3.3/fernetBrowser.js"></script>
+
+    <script type="module">
+        const SALT = "my-fixed-salt-2026";
+        const ITERATIONS = 600000;
+
+        let encryptedMsg =
+            "gAAAAABqs0G7zdpt-VXK3T3rostZr14xz569fcgDae41Q-n31n0JBSwuwa0v_7GvZpjhbpDXTwX43MWy5StP7j_2uQFiaS2kXg==";
+
+        async function deriveFernetKey(password) {
+            const encoder = new TextEncoder();
+
+            const importedKey = await crypto.subtle.importKey(
+                "raw",
+                encoder.encode(password),
+                "PBKDF2",
+                false,
+                ["deriveBits"]
+            );
+
+            const derivedBits = await crypto.subtle.deriveBits(
+                {
+                    name: "PBKDF2",
+                    salt: encoder.encode(SALT),
+                    iterations: ITERATIONS,
+                    hash: "SHA-256"
+                },
+                importedKey,
+                256
+            );
+
+            const bytes = new Uint8Array(derivedBits);
+
+            let binary = "";
+
+            for (let i = 0; i < bytes.length; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+
+            return btoa(binary)
+                .replace(/\+/g, "-")
+                .replace(/\//g, "_");
+        }
+
+        async function decryptMessage(encryptedMsg, password) {
+            try {
+                const key = await deriveFernetKey(password);
+
+                const secret = new fernet.Secret(key);
+
+                const token = new fernet.Token({
+                    secret: secret,
+                    token: encryptedMsg,
+                    ttl: 0
+                });
+
+                return token.decode();
+
+            } catch (error) {
+                return null;
+            }
+        }
+
+        window.decryptMessage = decryptMessage;
+
+        let savedToken = localStorage.getItem("token");
+
+        if (savedToken !== null) {
+            let decrypted_msg = await decryptMessage(encryptedMsg, savedToken);
+
+            if (decrypted_msg !== "PHWLK") {
+                window.location.href = "index.html";
+
+            }
+            else{
+                document.body.style.display = "block"
+            }
+        }
+
+    </script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Offline Games</title>
+
 </head>
-?
 <body>
 
     <h1>Offline Games</h1>
 
     <div id="GameList"></div>
 
-    <h1>Currently V2</h1>
+    <h1>Currently V3 - Changed Added fernet encryption to prevent people from going to the console to see the password</h1>
     <script>
-
 
         const games = [
     "1-on-1-soccer.html",
@@ -368,17 +447,19 @@
 
             // When the button is clicked,
             // open the game from the offline folder
-            button.onclick = function() {
+            button.onclick = async function() {
+                let password_token = localStorage.getItem('token')
+                let decrypted_password = await window.decryptMessage('gAAAAABqs0G7zdpt-VXK3T3rostZr14xz569fcgDae41Q-n31n0JBSwuwa0v_7GvZpjhbpDXTwX43MWy5StP7j_2uQFiaS2kXg==',password_token)
+                if (decrypted_password !== "PHWLK"){
+                    window.location.href = "index.html"
+                }
+                
                 if (gameFile == "cc-working"){
                     window.location.href = "offline/" + gameFile + "/index.html"
                     return
                 }
-                if (localStorage.getItem("token") == atob("Szd4UTltUjJ2TDhwVDR6TjZjVzF5SDVzRDNmSjBhQjh1RTJnVjlrWDRuUDZxWg==")){
-                window.location.href = "offline/" + gameFile;
-                }
-                else {
-                    window.location.href = "index.html"
-                }
+                window.location.href = "offline/" + gameFile
+                
             };
 
             // Add the button to the page
