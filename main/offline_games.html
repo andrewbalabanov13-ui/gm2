@@ -14,9 +14,37 @@
             width:100%;
             height:400px;
         }
+
+        #TopNav {
+            position:fixed;
+            width:100vw;
+            height:5vh;
+            display:flex;
+            left:0px;
+            top:0px;
+            background-color:#4B0082;
+            align-items: center;
+        }
+
+        .TopNav-button {
+            flex:1;
+            width:fit-content;
+            /* the right part of the calc is the margin for the top and bottom / 2 */
+            height:calc(100% - 10px);
+            margin:5px;
+            background-color:#8a2be2;
+            border-color:#8a2be2;
+            text-size-adjust: inherit;
+            font-size: calc(5vh - 14px);
+            font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;  
+        }
+
+        .TopNav-button:hover {
+            opacity:80%;
+        }
     </style>
 
-<script src="fernet.txt"></script>
+<script src="../fernet.txt"></script>
 
     <script type="module">
         const SALT = "my-fixed-salt-2026";
@@ -84,10 +112,11 @@
         let savedToken = localStorage.getItem("token");
 
         if (savedToken !== null) {
+            console.log("redirecting...")
             let decrypted_msg = await decryptMessage(encryptedMsg, savedToken);
 
             if (decrypted_msg !== "PHWLK") {
-                window.location.href = "index.html";
+                window.location.href = "../index.html";
 
             }
             else{
@@ -103,12 +132,16 @@
 
 </head>
 <body>
+    <div id="TopNav">
+        <button class="TopNav-button" onclick="window.location.href='offline_games.html';"> Offline Games </button>
+        <button class="TopNav-button" onclick="window.location.href='other_games';"> Other Games </button>
+    </div>
 
     <h1>Offline Games</h1>
 
     <div id="GameList"></div>
 
-    <h1>Currently V3 - Changed Added fernet encryption to prevent people from going to the console to see the password</h1>
+    <h1></h1>
     <script>
 
         const games = [
@@ -455,10 +488,10 @@
                 }
                 
                 if (gameFile == "cc-working"){
-                    window.location.href = "offline/" + gameFile + "/index.html"
+                    window.location.href = "../offline/" + gameFile + "/index.html"
                     return
                 }
-                window.location.href = "offline/" + gameFile
+                window.location.href = "../offline/" + gameFile
                 
             };
 

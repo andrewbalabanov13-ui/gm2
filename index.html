@@ -335,7 +335,7 @@
             let EncryptedMsg = "gAAAAABqs0G7zdpt-VXK3T3rostZr14xz569fcgDae41Q-n31n0JBSwuwa0v_7GvZpjhbpDXTwX43MWy5StP7j_2uQFiaS2kXg=="
             let decrypted_msg = await decryptMessage(EncryptedMsg,saved_token)
             if (decrypted_msg == "PHWLK"){
-                window.location.href="game_index.html"
+                window.location.href="main/offline_games.html"
             }
         }
 
@@ -497,7 +497,7 @@
             console.log(decrypted_msg)
             if (decrypted_msg == "PHWLK"){
                 localStorage.setItem('token',user_response)
-                window.location.href="game_index.html"
+                window.location.href="main_index/offline_games.html"
             }}
             catch(error){
                 alert(error)
