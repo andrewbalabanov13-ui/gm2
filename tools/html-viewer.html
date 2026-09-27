@@ -1,0 +1,224 @@
+<!--Place in a code editor.-->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Drag and Drop File</title>
+
+<style>
+body{
+  margin:0;
+  font-family:sans-serif;
+  overflow:hidden;
+  background:#fff;
+}
+
+#panel{
+  width:420px;
+  padding:20px;
+  border:2px dashed #aaa;
+  text-align:center;
+  font-size:18px;
+  color:#555;
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  background:#fff;
+  z-index:10;
+}
+
+#drop-area{
+  padding:40px 10px;
+  cursor:pointer;
+}
+
+#drop-area.drag{
+  background:#f0f0f0;
+}
+
+#html-input{
+  width:100%;
+  height:140px;
+  resize:vertical;
+  margin-top:15px;
+  box-sizing:border-box;
+  font-family:monospace;
+}
+
+#run-html{
+  margin-top:10px;
+  padding:10px 20px;
+  cursor:pointer;
+}
+
+#file-input{
+  display:none;
+}
+
+iframe{
+  position:absolute;
+  top:0;
+  left:0;
+  width:100vw;
+  height:100vh;
+  border:none;
+  background:white;
+}
+
+#fullscreen-btn{
+  position:fixed;
+  top:5px;
+  left:5px;
+  width:22px;
+  height:22px;
+  border:none;
+  border-radius:4px;
+  font-size:11px;
+  cursor:pointer;
+  z-index:9999;
+  display:none;
+}
+</style>
+</head>
+
+<body>
+
+<div id="panel">
+
+  <div id="drop-area">
+    Drag HTML file here or click to upload
+  </div>
+
+  <input type="file" id="file-input" accept=".htm,.html">
+
+  <textarea id="html-input" placeholder="Or paste HTML code here..."></textarea>
+
+  <br>
+
+  <button id="run-html">Run HTML</button>
+
+</div>
+
+<button id="fullscreen-btn">F</button>
+
+<iframe id="file-content"></iframe>
+
+<script>
+var panel = document.getElementById("panel");
+var dropArea = document.getElementById("drop-area");
+var iframe = document.getElementById("file-content");
+var fileInput = document.getElementById("file-input");
+var htmlInput = document.getElementById("html-input");
+var runButton = document.getElementById("run-html");
+var fullscreenBtn = document.getElementById("fullscreen-btn");
+
+function renderHTML(html) {
+
+  htmlInput.value = '';
+
+  try {
+
+    var doc =
+      iframe.contentDocument ||
+      iframe.contentWindow.document;
+
+    doc.open();
+    doc.write(html);
+    doc.close();
+
+  } catch(err) {
+
+    console.log(
+      "doc.write failed, using srcdoc fallback"
+    );
+
+    iframe.srcdoc = html;
+  }
+
+  panel.style.display = "none";
+  fullscreenBtn.style.display = "block";
+}
+
+function loadFile(file) {
+
+  if (!file) return;
+
+  var reader = new FileReader();
+
+  reader.onload = function(e) {
+    renderHTML(e.target.result);
+  };
+
+  reader.readAsText(file);
+}
+
+dropArea.addEventListener("click", function() {
+  fileInput.click();
+});
+
+fileInput.addEventListener("change", function(e) {
+  loadFile(e.target.files[0]);
+});
+
+dropArea.addEventListener("dragover", function(e) {
+  e.preventDefault();
+  dropArea.classList.add("drag");
+});
+
+dropArea.addEventListener("dragleave", function() {
+  dropArea.classList.remove("drag");
+});
+
+dropArea.addEventListener("drop", function(e) {
+
+  e.preventDefault();
+
+  dropArea.classList.remove("drag");
+
+  var file = e.dataTransfer.files[0];
+
+  loadFile(file);
+});
+
+runButton.addEventListener("click", function() {
+  renderHTML(htmlInput.value);
+});
+
+fullscreenBtn.addEventListener("click", async function() {
+
+  try {
+
+    if (iframe.requestFullscreen) {
+
+      await iframe.requestFullscreen();
+
+    } else if (iframe.webkitRequestFullscreen) {
+
+      iframe.webkitRequestFullscreen();
+
+    } else if (iframe.msRequestFullscreen) {
+
+      iframe.msRequestFullscreen();
+
+    } else {
+
+      console.log("Fullscreen API not supported");
+
+    }
+
+  } catch(err) {
+
+    console.error(
+      "Fullscreen failed:",
+      err
+    );
+
+  }
+
+});
+</script>
+
+</body>
+</html>
