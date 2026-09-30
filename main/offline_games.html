@@ -16,7 +16,7 @@
         }
 
         #TopNav {
-            position:fixed;
+            position:relative;
             width:100vw;
             height:5vh;
             display:flex;
@@ -132,13 +132,17 @@
 
 </head>
 <body>
+    <div id="ParentDiv">
     <div id="TopNav">
         <button class="TopNav-button" onclick="window.location.href='offline_games.html';"> Offline Games </button>
         <button class="TopNav-button" onclick="window.location.href='tools.html';"> Tools </button>
     </div>
 
+    <h1> Offline games! </h1>
+
     <div id="GameList">
 
+    </div>
     </div>
 
     <script>
@@ -213,7 +217,7 @@
     "cleanup-io.html",
     "cluster-rush.html",
     "cc-working",
-    "kaizo-cookies-main",
+    "cc-k",
     "crazy-cars.html",
     "crazy-cattle-3D.html",
     "crazy-crash-landing.html",
@@ -471,8 +475,8 @@
             // Set the button text
             button.textContent = gameName;
 
-            if (gameName == "Cc.Htm"){
-                button.textContent = "cookie-clicker"
+            if (gameName == "Cc K"){
+                button.textContent = "cookie-clicker kaizo"
             } 
             if (gameName == "Cc Working"){
                 button.textContent = "cookie-clicker Working Version"
@@ -491,7 +495,7 @@
                     window.location.href = "../offline/" + gameFile + "/index.html"
                     return
                 }
-                if (gameFile == "kaizo-cookies-main"){
+                if (gameFile == "cc-k"){
                     window.location.href = "../offline/" + gameFile + "/index.html"
                 }
                 window.location.href = "../offline/" + gameFile
