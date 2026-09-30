@@ -137,13 +137,10 @@
         <button class="TopNav-button" onclick="window.location.href='tools.html';"> Tools </button>
     </div>
 
-    <h1>Offline Games</h1>
-
     <div id="GameList">
-        <h1> Offline games! </h1>
+
     </div>
 
-    <h1></h1>
     <script>
 
         const games = [
@@ -216,6 +213,7 @@
     "cleanup-io.html",
     "cluster-rush.html",
     "cc-working",
+    "kaizo-cookies-main",
     "crazy-cars.html",
     "crazy-cattle-3D.html",
     "crazy-crash-landing.html",
@@ -492,6 +490,9 @@
                 if (gameFile == "cc-working"){
                     window.location.href = "../offline/" + gameFile + "/index.html"
                     return
+                }
+                if (gameFile == "kaizo-cookies-main"){
+                    window.location.href = "../offline/" + gameFile + "/index.html"
                 }
                 window.location.href = "../offline/" + gameFile
                 
