@@ -230,7 +230,7 @@ Game.registerMod("Kaizo Cookies", {
 		if (App) { if (CrumbsEngineLoaded) { this.header(); } else { Game.Notify(loc('Incorrect loading order!'), loc('Please restart the game, and load Crumbs Engine before Kaizo cookies.'), 0); } return; }
 		if (typeof CrumbsEngineLoaded === 'undefined' || !CrumbsEngineLoaded) { 
 			if (window.kaizo_load_local) { window.crumbs_load_local = window.kaizo_load_local; }
-			try { Game.LoadMod((window.kaizo_load_local)?'./Crumbs.js':'https://cursedsliver.github.io/Crumbs-engine/Crumbs.js'); } catch (err) { Game.Notify('Crumbs engine failed to load!', 'Critical prerequisite failed to load; mod loading halted', 0); console.log(err); }
+			try { Game.LoadMod((window.kaizo_load_local)?'Crumbs.js':'https://cursedsliver.github.io/Crumbs-engine/Crumbs.js'); } catch (err) { Game.Notify('Crumbs engine failed to load!', 'Critical prerequisite failed to load; mod loading halted', 0); console.log(err); }
 		}
 		eval('Game.Loop='+Game.Loop.toString().replace(`Timer.say('START');`,`const startTimestamp=Date.now();Timer.say('START');`).replace('setTimeout(Game.Loop,1000/Game.fps);','Game.deltaTime = Date.now()-Game.lastTimestamp; Game.lastTimestamp = startTimestamp; setTimeout(Game.Loop,Math.max(1000/Game.fps-(Date.now()-startTimestamp),0)); '));  //FPSTweaker
 		if (!App) { 
